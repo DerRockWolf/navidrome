@@ -2,9 +2,11 @@ package persistence
 
 import (
 	"database/sql"
+	"errors"
 
 	. "github.com/Masterminds/squirrel"
 	"github.com/deluan/rest"
+
 	"github.com/navidrome/navidrome/log"
 	"github.com/navidrome/navidrome/model"
 	"github.com/navidrome/navidrome/utils/slice"
@@ -67,6 +69,7 @@ func (r *playlistRepository) Tracks(playlistId string, refreshSmartPlaylist bool
 
 	pls, err := r.Get(playlistId)
 	if err != nil {
+		// TODO: this error is bad 🙃
 		log.Warn(r.ctx, "Error getting playlist's tracks", "playlistId", playlistId, err)
 		return nil
 	}
@@ -85,27 +88,8 @@ func (r *playlistTrackRepository) Count(options ...rest.QueryOptions) (int64, er
 }
 
 func (r *playlistTrackRepository) Read(id string) (any, error) {
-	userID := loggedUser(r.ctx).ID
-	sel := r.newSelect().
-		LeftJoin("annotation on ("+
-			"annotation.item_id = media_file_id"+
-			" AND annotation.item_type = 'media_file'"+
-			" AND annotation.user_id = '"+userID+"')").
-		Columns(
-			"coalesce(starred, 0) as starred",
-			"coalesce(play_count, 0) as play_count",
-			"coalesce(rating, 0) as rating",
-			"starred_at",
-			"play_date",
-			"rated_at",
-			"f.*",
-			"playlist_tracks.*",
-		).
-		Join("media_file f on f.id = media_file_id").
-		Where(And{Eq{"playlist_id": r.playlistId}, Eq{"playlist_tracks.id": id}})
-	var trk dbPlaylistTrack
-	err := r.queryOne(sel, &trk)
-	return trk.PlaylistTrack, err
+	// TODO: propose this in a different PR / issue, because having complex ish SQL queries around that are never called is kinda useless.
+	return nil, errors.New("unimplemented")
 }
 
 func (r *playlistTrackRepository) GetAll(options ...model.QueryOptions) (model.PlaylistTracks, error) {
