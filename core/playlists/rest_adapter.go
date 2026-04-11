@@ -94,6 +94,8 @@ func (s *playlists) updatePlaylistEntity(ctx context.Context, id string, entity 
 		}
 	}
 	usr, _ := request.UserFrom(ctx)
+	// TODO: check back later: why are only admins allowed to change ownership of playlists?
+	// is it to prevent users from flooding the playlists of other users? but ordinary users can just mark playlists as public (I guess that just floods the "Shared Playlists" section but still)
 	if !usr.IsAdmin && entity.OwnerID != "" && entity.OwnerID != current.OwnerID {
 		return rest.ErrPermissionDenied
 	}
