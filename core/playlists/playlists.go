@@ -101,6 +101,7 @@ func (s *playlists) GetWithTracks(ctx context.Context, id string) (*model.Playli
 	return s.ds.Playlist(ctx).GetWithTracks(id, true, false)
 }
 
+// TODO: rename
 func (s *playlists) GetPlaylists(ctx context.Context, mediaFileId string) (model.Playlists, error) {
 	return s.ds.Playlist(ctx).GetPlaylists(mediaFileId)
 }
