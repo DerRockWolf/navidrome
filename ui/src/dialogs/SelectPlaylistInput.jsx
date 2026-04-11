@@ -269,7 +269,8 @@ export const SelectPlaylistInput = ({ onChange }) => {
 
   const options =
     ids &&
-    ids.map((id) => data[id]).filter((option) => isWritable(option.ownerId))
+    ids.map((id) => data[id]).filter((option) => true)
+  // TODO: just writing const options = ids didn't work
 
   // Filter playlists based on search text
   const filteredOptions =

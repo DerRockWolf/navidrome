@@ -129,7 +129,7 @@ const PlaylistDetails = (props) => {
               cursor: imageError ? 'default' : 'pointer',
             }}
           />
-          {isWritable(record.ownerId) && (
+          {isWritable(record.permission) && (
             <ImageUploadOverlay
               entityType="playlist"
               entityId={record.id}

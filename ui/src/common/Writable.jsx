@@ -3,7 +3,7 @@ import { isWritable } from './playlistUtils.js'
 
 export const Writable = (props) => {
   const { record = {}, children } = props
-  if (isWritable(record.ownerId)) {
+  if (isWritable(record.permission)) {
     return Children.map(children, (child) =>
       isValidElement(child) ? cloneElement(child, props) : child,
     )

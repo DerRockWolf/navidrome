@@ -1,15 +1,14 @@
-export const isWritable = (ownerId) => {
+export const isWritable = (permission) => {
   return (
-    localStorage.getItem('userId') === ownerId ||
-    localStorage.getItem('role') === 'admin'
+    permission === "editor" || permission === "owner" || permission === "admin"
   )
 }
 
-export const isReadOnly = (ownerId) => {
-  return !isWritable(ownerId)
+export const isReadOnly = (permission) => {
+  return !isWritable(permission)
 }
 
 export const isSmartPlaylist = (pls) => !!pls.rules
 
 export const canChangeTracks = (pls) =>
-  isWritable(pls.ownerId) && !isSmartPlaylist(pls)
+  isWritable(pls.permission) && !isSmartPlaylist(pls)

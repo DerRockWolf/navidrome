@@ -84,7 +84,7 @@ const TogglePublicInput = ({ resource, source }) => {
     <Switch
       checked={record[source]}
       onClick={handleClick}
-      disabled={!isWritable(record.ownerId)}
+      disabled={!isWritable(record.permission)}
     />
   )
 }
@@ -115,7 +115,7 @@ const ToggleAutoImport = ({ resource, source }) => {
     <Switch
       checked={record[source]}
       onClick={handleClick}
-      disabled={!isWritable(record.ownerId)}
+      disabled={!isWritable(record.permission)}
     />
   ) : null
 }
@@ -178,7 +178,7 @@ const PlaylistList = (props) => {
       actions={<PlaylistListActions />}
       bulkActionButtons={!isXsmall && <PlaylistListBulkActions />}
     >
-      <Datagrid rowClick="show" isRowSelectable={(r) => isWritable(r?.ownerId)}>
+      <Datagrid rowClick="show" isRowSelectable={(r) => isWritable(r?.permission)}>
         <CoverArtAvatar source="id" variant="square" />
         <TextField source="name" />
         {columns}

@@ -1,3 +1,4 @@
+// TODO: why is this only shown when admin? :(
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, beforeEach, vi } from 'vitest'
