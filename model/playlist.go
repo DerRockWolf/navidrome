@@ -168,8 +168,9 @@ type PlaylistTrackRepository interface {
 }
 
 type PlaylistPermission struct {
-	PlaylistID string     `json:"playlistId"`
-	UserID     string     `json:"userId"`
+	PlaylistID string `json:"playlistId"`
+	UserID     string `json:"userId"`
+	// TODO: consider changing to integer (also adapt DB migration)
 	Permission Permission `json:"permission"`
 }
 
