@@ -101,6 +101,7 @@ func (r sqlRepository) newSelect(options ...model.QueryOptions) SelectBuilder {
 	return sq
 }
 
+// FIXME: only the first item in the options slice is actually used...
 func (r sqlRepository) applyOptions(sq SelectBuilder, options ...model.QueryOptions) SelectBuilder {
 	if len(options) > 0 {
 		if options[0].Max > 0 {
@@ -179,6 +180,7 @@ func splitFunc(delimiter rune) func(c rune) bool {
 	}
 }
 
+// FIXME: only the first item in the options slice is actually used...
 func (r sqlRepository) applyFilters(sq SelectBuilder, options ...model.QueryOptions) SelectBuilder {
 	if len(options) > 0 && options[0].Filters != nil {
 		sq = sq.Where(options[0].Filters)
