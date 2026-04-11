@@ -81,6 +81,7 @@ func (s *playlists) savePlaylist(ctx context.Context, pls *model.Playlist) (stri
 // updatePlaylistEntity updates playlist metadata with permission checks.
 // Used by the REST API wrapper.
 func (s *playlists) updatePlaylistEntity(ctx context.Context, id string, entity *model.Playlist) error {
+	// TODO: there might now be a drift in the permissions required to call update (native api vs subsonic)
 	current, err := s.checkOwner(ctx, id)
 	if err != nil {
 		switch {

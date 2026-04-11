@@ -11,9 +11,10 @@ import (
 
 	. "github.com/Masterminds/squirrel"
 	"github.com/deluan/rest"
+	"github.com/pocketbase/dbx"
+
 	"github.com/navidrome/navidrome/log"
 	"github.com/navidrome/navidrome/model"
-	"github.com/pocketbase/dbx"
 )
 
 type playlistRepository struct {
@@ -51,8 +52,9 @@ func NewPlaylistRepository(ctx context.Context, db dbx.Builder) model.PlaylistRe
 	r.ctx = ctx
 	r.db = db
 	r.registerModel(&model.Playlist{}, map[string]filterFunc{
-		"q":     playlistFilter,
-		"smart": smartPlaylistFilter,
+		"q":          playlistFilter,
+		"smart":      smartPlaylistFilter,
+		"permission": permissionFilter,
 	})
 	r.setSortMappings(map[string]string{
 		"owner_name": "owner_name",
@@ -71,6 +73,25 @@ func smartPlaylistFilter(string, any) Sqlizer {
 	return Or{
 		Eq{"rules": ""},
 		Eq{"rules": nil},
+	}
+}
+
+// TODO: consider dropping this idea or at least heavily change it because the new permission field allow much easier filtering
+func permissionFilter(_ string, value any) Sqlizer {
+	perm, ok := value.(string)
+	if !ok {
+		// TODO: hmm no proper error handling possible here
+		return Or{}
+	}
+	switch perm {
+	case "viewer":
+		return Or{}
+	case "editor":
+		// TODO: should also include owners but how can I compare the owner ID? I need some way to reference parameters that I can later pass into the sql query.
+		// Otherwise, implement the get handler func myself...
+		return Eq{"permission": model.PermissionEditor}
+	default:
+		return Or{}
 	}
 }
 
@@ -177,6 +198,11 @@ func (r *playlistRepository) findBy(sql Sqlizer) (*model.Playlist, error) {
 }
 
 func (r *playlistRepository) GetAll(options ...model.QueryOptions) (model.Playlists, error) {
+	// TODO: used at many locations that don't explicitly specify for which user this request is made. So either I reintroduce the userFilter and adjust it for the new permission logic or add a new GetAllUserAccessiblePlaylists method that better communicates intent.
+	// TLDR:
+	// - methods that get the ID passed will only be called from "trusted" parts that already validated that the user is allowed to run the specific request.
+	// - methods that should list all by a provided filter are not really able to be gated behind a callee permission check and must be reduced by a SQL filter query to only return rows that should be shown to the user.
+	// TODO: the permission/role query filter from the options slice shouldn't be passed / used when admin...
 	sel := r.userFilter(r.selectPlaylist(options...))
 	var res []dbPlaylist
 	err := r.queryAll(sel, &res)
@@ -213,6 +239,7 @@ func setPermissionField(dbPls *dbPlaylist, user *model.User) {
 	}
 }
 
+// GetPlaylists returns the playlists that include the passed track (mediaFileId)
 func (r *playlistRepository) GetPlaylists(mediaFileId string) (model.Playlists, error) {
 	sel := r.userFilter(r.selectPlaylist(model.QueryOptions{Sort: "name"})).
 		Join("playlist_tracks on playlist.id = playlist_tracks.playlist_id").
