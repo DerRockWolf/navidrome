@@ -453,10 +453,8 @@ func (r sqlRepository) put(id string, m any, colsToUpdate ...string) (newId stri
 
 func (r sqlRepository) delete(cond Sqlizer) error {
 	del := Delete(r.tableName).Where(cond)
+	// NOTE: I've removed the `errors.Is` that maps `ErrNoRows` to `ErrNotFound` as this error is never raised when calling a deletion and there is already logic that depends on this succeeding when no row exists
 	_, err := r.executeSQL(del)
-	if errors.Is(err, sql.ErrNoRows) {
-		return model.ErrNotFound
-	}
 	return err
 }
 
