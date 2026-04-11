@@ -25,6 +25,7 @@ func (s *playlists) NewRepository(ctx context.Context) rest.Repository {
 // playlistRepositoryWrapper wraps the playlist repository as a thin REST-to-service adapter.
 // It satisfies rest.Repository through the embedded PlaylistRepository (via ResourceRepository),
 // and rest.Persistable by delegating to service methods for all mutations.
+// TODO: find out why actually
 type playlistRepositoryWrapper struct {
 	model.PlaylistRepository
 	ctx     context.Context
